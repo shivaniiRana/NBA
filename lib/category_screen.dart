@@ -12,7 +12,7 @@ class CategoryScreen extends StatefulWidget {
 
 class _CategoryScreenState extends State<CategoryScreen> {
   final FlutterTts _flutterTts = FlutterTts();
-  bool _isSpeaking = false; // Track if TTS is currently speaking
+  bool _isSpeaking = false;
 
   @override
   void initState() {
@@ -20,29 +20,33 @@ class _CategoryScreenState extends State<CategoryScreen> {
     _initializeTTS();
   }
 
-  // Initialize TTS settings (e.g., language, rate, volume)
   Future<void> _initializeTTS() async {
-    await _flutterTts.setLanguage("en-US"); // Set default language to English
-    await _flutterTts.setSpeechRate(0.5); // Set speech rate (0.0 - 1.0)
-    await _flutterTts.setVolume(1.0); // Set volume (0.0 - 1.0)
+    await _flutterTts.setLanguage("en-US");
+    await _flutterTts.setSpeechRate(0.5);
+    await _flutterTts.setVolume(1.0);
 
-    // Optionally, handle TTS initialization errors
+    bool isAvailable = await _flutterTts.isLanguageAvailable("en-US");
+    if (isAvailable) {
+      print("TTS is ready.");
+    } else {
+      print("TTS language not available.");
+    }
+
     _flutterTts.setErrorHandler((msg) {
       print("Error with TTS: $msg");
     });
   }
 
-  // This function will trigger speech to read the category description
   Future<void> _speak(String text) async {
     if (text.isNotEmpty && !_isSpeaking) {
       setState(() {
         _isSpeaking = true;
       });
+      print("Starting to speak: $text");
       await _flutterTts.speak(text);
     }
   }
 
-  // This function will stop any ongoing speech (optional, if you need a stop button)
   Future<void> _stop() async {
     await _flutterTts.stop();
     setState(() {
@@ -53,17 +57,17 @@ class _CategoryScreenState extends State<CategoryScreen> {
   @override
   Widget build(BuildContext context) {
     final String description = widget.category['description'] ?? 'No description available';
-    final String imageUrl = widget.category['thumbnailUrl'] ?? '';  // Handle missing image
+    final String imageUrl = widget.category['thumbnailUrl'] ?? '';
 
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.category['name'] ?? 'Category'),
         backgroundColor: Colors.black,
-        iconTheme: IconThemeData(color: Colors.white), // Set the back arrow to white
+        iconTheme: IconThemeData(color: Colors.white),
         titleTextStyle: TextStyle(
-          color: Colors.white,  // Set title text color to white
-          fontSize: 20,         // Set font size of the title
-          fontWeight: FontWeight.bold, // Optional: make title bold
+          color: Colors.white,
+          fontSize: 20,
+          fontWeight: FontWeight.bold,
         ),
       ),
       body: Padding(
@@ -72,9 +76,9 @@ class _CategoryScreenState extends State<CategoryScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Display the image from the URL or a placeholder
+              // Display the image
               Stack(
-                alignment: Alignment.bottomRight, // Position icon at the bottom-right
+                alignment: Alignment.bottomRight,
                 children: [
                   imageUrl.isNotEmpty
                       ? ClipRRect(
@@ -114,14 +118,14 @@ class _CategoryScreenState extends State<CategoryScreen> {
                     ),
                   ),
 
-                  // Speaker icon positioned at the bottom-right of the image
+                  // TTS icon
                   Container(
-                    margin: EdgeInsets.only(bottom: 15, right: 20),  // Margin from the bottom and right
+                    margin: EdgeInsets.only(bottom: 15, right: 20),
                     decoration: BoxDecoration(
-                      color: Colors.black.withOpacity(0.5),  // Semi-transparent black background
+                      color: Colors.black.withOpacity(0.5),
                       shape: BoxShape.circle,
                     ),
-                    padding: EdgeInsets.all(4), // Add padding for a better visual effect
+                    padding: EdgeInsets.all(4),
                     child: IconButton(
                       icon: Icon(
                         _isSpeaking ? Icons.pause_circle_filled : Icons.volume_up,
@@ -130,9 +134,9 @@ class _CategoryScreenState extends State<CategoryScreen> {
                       ),
                       onPressed: () {
                         if (_isSpeaking) {
-                          _stop();  // Pause speech
+                          _stop();
                         } else {
-                          _speak(description);  // Start speech
+                          _speak(description);
                         }
                       },
                     ),
@@ -140,8 +144,6 @@ class _CategoryScreenState extends State<CategoryScreen> {
                 ],
               ),
               SizedBox(height: 20),
-
-              // Display the description of the category
               Text(
                 description,
                 style: TextStyle(fontSize: 16, height: 1.5),
@@ -153,7 +155,6 @@ class _CategoryScreenState extends State<CategoryScreen> {
     );
   }
 
-  // Disposing flutter_tts instance to prevent memory leaks
   @override
   void dispose() {
     super.dispose();
