@@ -13,6 +13,8 @@ class CategoryScreen extends StatefulWidget {
 class _CategoryScreenState extends State<CategoryScreen> {
   final FlutterTts _flutterTts = FlutterTts();
   bool _isSpeaking = false;
+  bool _isPaused = false;
+  String _currentText = '';
 
   @override
   void initState() {
@@ -35,15 +37,43 @@ class _CategoryScreenState extends State<CategoryScreen> {
     _flutterTts.setErrorHandler((msg) {
       print("Error with TTS: $msg");
     });
+
+    // Listen to the completion event
+    _flutterTts.setCompletionHandler(() {
+      setState(() {
+        _isSpeaking = false;
+        _isPaused = false;
+      });
+    });
   }
 
   Future<void> _speak(String text) async {
-    if (text.isNotEmpty && !_isSpeaking) {
-      setState(() {
-        _isSpeaking = true;
-      });
-      print("Starting to speak: $text");
-      await _flutterTts.speak(text);
+    if (text.isNotEmpty) {
+      if (_isSpeaking) {
+        // If speaking, we pause the speech
+        await _flutterTts.stop();
+        setState(() {
+          _isSpeaking = false;
+          _isPaused = true;
+          _currentText = text; // Save the current text to resume later
+        });
+      } else if (_isPaused) {
+        // If paused, we restart the speech from the saved text
+        await _flutterTts.speak(_currentText);
+        setState(() {
+          _isSpeaking = true;
+          _isPaused = false;
+        });
+      } else {
+        // If not speaking or paused, we start new speech
+        setState(() {
+          _isSpeaking = true;
+        });
+        await _flutterTts.speak(text);
+        setState(() {
+          _currentText = text; // Save the current text being spoken
+        });
+      }
     }
   }
 
@@ -51,6 +81,8 @@ class _CategoryScreenState extends State<CategoryScreen> {
     await _flutterTts.stop();
     setState(() {
       _isSpeaking = false;
+      _isPaused = false;
+      _currentText = '';
     });
   }
 
@@ -128,16 +160,16 @@ class _CategoryScreenState extends State<CategoryScreen> {
                     padding: EdgeInsets.all(4),
                     child: IconButton(
                       icon: Icon(
-                        _isSpeaking ? Icons.pause_circle_filled : Icons.volume_up,
+                        _isSpeaking
+                            ? Icons.pause_circle_filled
+                            : _isPaused
+                            ? Icons.play_circle_filled
+                            : Icons.volume_up,
                         size: 32,
                         color: Colors.white,
                       ),
                       onPressed: () {
-                        if (_isSpeaking) {
-                          _stop();
-                        } else {
-                          _speak(description);
-                        }
+                        _speak(description);
                       },
                     ),
                   ),
