@@ -88,10 +88,13 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
     if (_isDataLoaded) {
       // Schedule navigation after the current frame is built
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => HomePage()),
-        );
+        // Add a delay to ensure the animation is completed
+        Future.delayed(Duration(milliseconds: 500), () {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => HomePage()),
+          );
+        });
       });
     }
 
