@@ -122,3 +122,24 @@ flutter_native_splash: Configures splash screen for both Android/iOS.
 Additional Notes
 Code Structure: The code is modular, with each screen and feature separated into its own file. The app follows the Atomic Design principles for maintainability.
 State Management: The app uses Provider for managing state, ensuring a responsive UI and clean architecture.
+
+
+## Screenshots
+1) Splash screen
+
+![App Screenshot](assets/images/screenshots/animated_splashscreen.png)
+
+2) Home screen
+
+![App Screenshot](assets/images/screenshots/homescreen.png)
+
+3) Categories Detail Screen 
+
+![App Screenshot](assets/images/screenshots/categoriesscreendetails.png)
+
+4) Playbutton visual changes 
+
+
+![App Screenshot](assets/images/screenshots/playbutton.png)
+
+
