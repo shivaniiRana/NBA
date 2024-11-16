@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "788370623158",
+    "project_id": "nbahighlights0603",
+    "storage_bucket": "nbahighlights0603.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:788370623158:android:d08654723a811080683417",
+        "android_client_info": {
+          "package_name": "com.example.nbahighlights0603"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCO39fSiIbNw8ULbzzU0WllUFJQ7kyIEgA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
